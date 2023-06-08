@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Password Inventory</title>
+  <link rel="stylesheet" href="style.css">
+  <style >
+    
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PASSWORD INVENTORY</h1>
+
+    <form id="addItemForm">
+      <div class="form-group">
+        <label for="application">Application:</label>
+        <input type="text" id="application" required>
+      </div>
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+      </div>
+      <div class="form-group">
+        <input type="submit" value="Add Item">
+      </div>
+    </form>
+
+    <div class="search-form">
+      <input type="text" id="searchInput" placeholder="Search by application or username">
+      <button id="searchButton">Search</button>
+    </div>
+
+    <ul class="item-list" id="itemList">
+      <!-- List of items will be dynamically added here -->
+    </ul>
+  </div>
+
+  <script>
+    const itemList = document.getElementById("itemList");
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+
+    // Function to handle form submission and add items to the inventory
+    function addItem(event) {
+      event.preventDefault();
+
+      // Get the input values
+      const applicationInput = document.getElementById("application");
+      const usernameInput = document.getElementById("username");
+      const passwordInput = document.getElementById("password");
+
+      const application = applicationInput.value;
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+
+      // Create a new list item for the added item
+      const listItem = document.createElement("li");
+      listItem.innerHTML = `
+        <div>
+          <span>Application: ${application}</span>
+          <span>Username: ${username}</span>
+          <span>Password: ${password}</span>
+        </div>
+        <div class="actions">
+          <button class="edit-button">Edit</button>
+          <button class="delete-button">Delete</button>
+        </div>
+      `;
+
+      // Add event listener to the delete button
+      const deleteButton = listItem.querySelector(".delete-button");
+      deleteButton.addEventListener("click", deleteItem);
+
+      // Add event listener to the edit button
+      const editButton = listItem.querySelector(".edit-button");
+      editButton.addEventListener("click", editItem);
+
+      // Append the new list item to the item list
+      itemList.appendChild(listItem);
+
+      // Reset the input values
+      applicationInput.value = "";
+      usernameInput.value = "";
+      passwordInput.value = "";
+    }
+
+    // Function to handle item deletion
+    function deleteItem(event) {
+      const listItem = event.target.parentNode.parentNode;
+      itemList.removeChild(listItem);
+    }
+
+    // Function to handle item editing
+    function editItem(event) {
+      const listItem = event.target.parentNode.parentNode;
+      const application = listItem.querySelector("span:nth-child(1)");
+      const username = listItem.querySelector("span:nth-child(2)");
+      const password = listItem.querySelector("span:nth-child(3)");
+
+      const newApplication = prompt("Enter the new application:", application.textContent.replace("Application: ", ""));
+      const newUsername = prompt("Enter the new username:", username.textContent.replace("Username: ", ""));
+      const newPassword = prompt("Enter the new password:", password.textContent.replace("Password: ", ""));
+
+      if (newApplication && newUsername && newPassword) {
+        application.textContent = `Application: ${newApplication}`;
+        username.textContent = `Username: ${newUsername}`;
+        password.textContent = `Password: ${newPassword}`;
+      }
+    }
+
+    // Function to handle search
+    function searchItem() {
+      const searchValue = searchInput.value.toLowerCase();
+      const items = itemList.getElementsByTagName("li");
+
+      for (let i = 0; i < items.length; i++) {
+        const application = items[i].querySelector("span:nth-child(1)").textContent.toLowerCase();
+        const username = items[i].querySelector("span:nth-child(2)").textContent.toLowerCase();
+
+        if (application.includes(searchValue) || username.includes(searchValue)) {
+          items[i].style.display = "";
+        } else {
+          items[i].style.display = "none";
+        }
+      }
+    }
+
+    // Add event listener to the form submission
+    const addItemForm = document.getElementById("addItemForm");
+    addItemForm.addEventListener("submit", addItem);
+
+    // Add event listener to the search button
+    searchButton.addEventListener("click", searchItem);
+  </script>
